@@ -1,0 +1,296 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Crud {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum ROLE {
+  SUPERADMIN
+  ADMIN
+  USER
+  RIDER
+}
+
+model Admin {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(100)
+  role       ROLE      @default(SUPERADMIN)
+  address    String
+  phone      String    @unique
+  email      String    @unique
+  password   String
+  nid        String    @unique
+  blocked    Boolean
+  update_at  DateTime  @updatedAt
+  created_at DateTime  @default(now())
+  Support    Support[]
+}
+
+model Customer {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(100)
+  role        ROLE          @default(USER)
+  address     String
+  phone       String        @unique
+  email       String        @unique
+  password    String
+  blocked     Boolean
+  update_at   DateTime      @updatedAt
+  created_at  DateTime      @default(now())
+  Delivery    Delivery[]
+  Support     Support[]
+  Transaction Transaction[]
+}
+
+model Product {
+  id               Int              @id @default(autoincrement())
+  name             String
+  brandId          Int
+  unitsId          Int?
+  typeId           Int
+  productCode      String
+  barCode          String
+  quantity         Int
+  quantityAlert    Int
+  price            Int
+  description      String
+  isRefrigerate    Boolean
+  manufacturedDate DateTime?
+  expriredDate     DateTime?
+  update_at        DateTime         @updatedAt
+  created_at       DateTime         @default(now())
+  category         Category[]
+  subCategory      SubCategory[]
+  inventory        Inventory[]
+  orderDetails     OrderDetails[]
+  transfer         Transfer[]
+  deliveryDetail   DeliveryDetail[]
+  brand            Brand            @relation(fields: [brandId], references: [id])
+  units            Units?           @relation(fields: [unitsId], references: [id])
+  productType      ProductType      @relation(fields: [typeId], references: [id])
+  productImage     ProductImage[]
+}
+
+model ProductImage {
+  id        Int     @id @default(autoincrement())
+  image     String
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+// DONE
+model ProductType {
+  id         Int       @id @default(autoincrement())
+  name       String
+  update_at  DateTime  @updatedAt
+  created_at DateTime  @default(now())
+  Product    Product[]
+}
+
+// DONE
+model Brand {
+  id         Int       @id @default(autoincrement())
+  name       String
+  update_at  DateTime  @updatedAt
+  created_at DateTime  @default(now())
+  Product    Product[]
+}
+
+model Category {
+  id          Int           @id @default(autoincrement())
+  name        String
+  productId   Int
+  update_at   DateTime      @updatedAt
+  created_at  DateTime      @default(now())
+  Product     Product[]
+  SubCategory SubCategory[]
+}
+
+model SubCategory {
+  id         Int        @id @default(autoincrement())
+  name       String
+  categoyId  Int
+  productId  Int
+  update_at  DateTime   @updatedAt
+  created_at DateTime   @default(now())
+  Category   Category[]
+  Product    Product[]
+}
+
+model Units {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(20)
+  shortName  String
+  status     Boolean
+  update_at  DateTime  @updatedAt
+  created_at DateTime  @default(now())
+  Product    Product[]
+}
+
+model Delivery {
+  id             Int              @id @default(autoincrement())
+  customerId     Int
+  salesDate      DateTime
+  created_at     DateTime         @default(now())
+  DeliveryDetail DeliveryDetail[]
+  Customer       Customer         @relation(fields: [customerId], references: [id])
+}
+
+model DeliveryDetail {
+  id               Int       @id @default(autoincrement())
+  deliverId        Int
+  productId        Int
+  warehouseId      Int
+  deliveryQuantity Int
+  expectedDate     DateTime
+  created_at       DateTime  @default(now())
+  Delivery         Delivery  @relation(fields: [deliverId], references: [id])
+  Product          Product   @relation(fields: [productId], references: [id])
+  WareHouse        WareHouse @relation(fields: [warehouseId], references: [id])
+}
+
+model Location {
+  id              Int         @id @default(autoincrement())
+  locationName    String
+  locationAddress String
+  update_at       DateTime    @updatedAt
+  created_at      DateTime    @default(now())
+  WareHouse       WareHouse[]
+}
+
+model Inventory {
+  id             Int       @id @default(autoincrement())
+  productId      Int
+  warehouseId    Int
+  stockAvailable Int
+  maxStockLevel  Int
+  minStockLevel  Int
+  recordPoint    Int
+  update_at      DateTime  @updatedAt
+  created_at     DateTime  @default(now())
+  Product        Product   @relation(fields: [productId], references: [id])
+  WareHouse      WareHouse @relation(fields: [warehouseId], references: [id])
+}
+
+model WareHouse {
+  id             Int              @id @default(autoincrement())
+  locationID     Int
+  wareHouseName  String
+  address        String
+  isRefrigerate  Boolean
+  Location       Location         @relation(fields: [locationID], references: [id])
+  Inventory      Inventory[]
+  OrderDetails   OrderDetails[]
+  Transfer       Transfer[]
+  DeliveryDetail DeliveryDetail[]
+}
+
+model Transfer {
+  id               Int       @id @default(autoincrement())
+  productId        Int
+  warehouseId      Int
+  TransferQuantity Int
+  sentDate         DateTime
+  receviedDate     DateTime
+  transferStatusId Int
+  update_at        DateTime  @updatedAt
+  created_at       DateTime  @default(now())
+  Product          Product   @relation(fields: [productId], references: [id])
+  WareHouse        WareHouse @relation(fields: [warehouseId], references: [id])
+  status           Status    @relation(fields: [transferStatusId], references: [id])
+}
+
+model Status {
+  id         Int        @id @default(autoincrement())
+  name       String
+  update_at  DateTime   @updatedAt
+  created_at DateTime   @default(now())
+  Transfer   Transfer[]
+}
+
+model Order {
+  id            Int            @id @default(autoincrement())
+  providerId    Int
+  transactionId Int
+  orderDate     DateTime
+  update_at     DateTime       @updatedAt
+  created_at    DateTime       @default(now())
+  OrderDetails  OrderDetails[]
+  Provider      Provider       @relation(fields: [providerId], references: [id])
+  Transaction   Transaction    @relation(fields: [transactionId], references: [id])
+}
+
+model OrderDetails {
+  id            Int       @id @default(autoincrement())
+  orderId       Int
+  productId     Int
+  warehouseId   Int
+  orderDetails  String
+  orderQuantity Int
+  expectedDate  DateTime
+  actualDate    DateTime
+  update_at     DateTime  @updatedAt
+  created_at    DateTime  @default(now())
+  Order         Order     @relation(fields: [orderId], references: [id])
+  Product       Product   @relation(fields: [productId], references: [id])
+  WareHouse     WareHouse @relation(fields: [warehouseId], references: [id])
+}
+
+model Transaction {
+  id                Int      @id @default(autoincrement())
+  customerID        Int
+  payment           Int
+  vat               Int
+  TransactionCode   String
+  transactionType   String
+  transactionMode   String
+  transactionStatus String
+  update_at         DateTime @updatedAt
+  created_at        DateTime @default(now())
+  Customer          Customer @relation(fields: [customerID], references: [id])
+  Order             Order[]
+}
+
+// TODO: Add refarecnce 
+model Provider {
+  id         Int      @id @default(autoincrement())
+  name       String
+  address    String
+  phone      String   @unique
+  email      String   @unique
+  nid        String   @unique
+  role       ROLE     @default(RIDER)
+  blocked    Boolean
+  accepted   Boolean
+  update_at  DateTime @updatedAt
+  created_at DateTime @default(now())
+  Order      Order[]
+}
+
+model Support {
+  id           Int        @id @default(autoincrement())
+  customerId   Int
+  adminId      Int
+  message      String
+  messageReply String
+  update_at    DateTime   @updatedAt
+  created_at   DateTime   @default(now())
+  Customer     Customer[]
+  Admin        Admin[]
+}
