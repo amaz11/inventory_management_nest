@@ -7,18 +7,54 @@ import { DatabaseService } from 'src/database/database.service';
 export class ProductsService {
   constructor(private readonly databaseService: DatabaseService) { }
   async create(createProductDto: Prisma.ProductCreateInput) {
+    console.log(createProductDto);
+    const categoryArr = createProductDto.category as any as any[]
+    const subCategoryArr = createProductDto.subCategory as any as any[]
     return await this.databaseService.product.create({
-      data: createProductDto
+      data: {
+        ...createProductDto,
+        category: {
+          connect: categoryArr
+        },
+        subCategory: {
+          connect: subCategoryArr
+        }
+      },
+      include: {
+        brand: true,
+        category: true,
+        subCategory: true,
+        productType: true,
+        productImage: true,
+        units: true,
+      }
     });
   }
 
   async findAll() {
-    return await this.databaseService.product.findMany();
+    return await this.databaseService.product.findMany({
+      include: {
+        brand: true,
+        category: true,
+        subCategory: true,
+        productType: true,
+        productImage: true,
+        units: true,
+      }
+    });
   }
 
   async findOne(id: number) {
     const product = await this.databaseService.product.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        brand: true,
+        category: true,
+        subCategory: true,
+        productType: true,
+        productImage: true,
+        units: true,
+      }
     });
     if (!product) {
       throw new NotFoundException('Product not found');
@@ -27,7 +63,29 @@ export class ProductsService {
   }
 
   async update(id: number, updateProductDto: Prisma.ProductUpdateInput) {
-    return await this.databaseService.product.update({ where: { id }, data: updateProductDto })
+    const categoryArr = updateProductDto.category as any as any[]
+    const subCategoryArr = updateProductDto.subCategory as any as any[]
+
+    return await this.databaseService.product.update({
+      where: { id }, data: {
+        ...updateProductDto,
+        category: {
+          connect: categoryArr,
+          disconnect: []
+        },
+        subCategory: {
+          connect: subCategoryArr,
+          disconnect: []
+        }
+      }, include: {
+        brand: true,
+        category: true,
+        subCategory: true,
+        productType: true,
+        productImage: true,
+        units: true,
+      }
+    })
   }
 
   async remove(id: number) {
