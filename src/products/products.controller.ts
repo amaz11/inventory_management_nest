@@ -23,7 +23,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: Prisma.ProductUpdateInput) {
+  update(@Param('id') id: string, @Body() updateProductDto: Prisma.ProductUpdateInput,) {
     return this.productsService.update(+id, updateProductDto);
   }
 

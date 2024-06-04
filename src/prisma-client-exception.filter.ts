@@ -38,7 +38,7 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
                     const status = HttpStatus.CONFLICT;
                     response.status(status).json({
                         statusCode: status,
-                        message: "The value {field_value} stored in the database for the field {field_name} is invalid for the field's type",
+                        message: "The value stored in the database for the field is invalid for the field's type",
                     });
                     break;
                 }

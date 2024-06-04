@@ -39,7 +39,7 @@ model Admin {
   blocked    Boolean
   update_at  DateTime  @updatedAt
   created_at DateTime  @default(now())
-  Support    Support[]
+  support    Support[]
 }
 
 model Customer {
@@ -53,9 +53,9 @@ model Customer {
   blocked     Boolean
   update_at   DateTime      @updatedAt
   created_at  DateTime      @default(now())
-  Delivery    Delivery[]
-  Support     Support[]
-  Transaction Transaction[]
+  delivery    Delivery[]
+  support     Support[]
+  transaction Transaction[]
 }
 
 model Product {
@@ -100,7 +100,7 @@ model ProductType {
   name       String
   update_at  DateTime  @updatedAt
   created_at DateTime  @default(now())
-  Product    Product[]
+  product    Product[]
 }
 
 // DONE
@@ -109,30 +109,30 @@ model Brand {
   name       String
   update_at  DateTime  @updatedAt
   created_at DateTime  @default(now())
-  Product    Product[]
+  product    Product[]
 }
 
+// DONE
 model Category {
   id          Int           @id @default(autoincrement())
   name        String
-  productId   Int
   update_at   DateTime      @updatedAt
   created_at  DateTime      @default(now())
-  Product     Product[]
-  SubCategory SubCategory[]
+  product     Product[]
+  subCategory SubCategory[]
 }
 
+// DONE
 model SubCategory {
   id         Int        @id @default(autoincrement())
   name       String
-  categoyId  Int
-  productId  Int
   update_at  DateTime   @updatedAt
   created_at DateTime   @default(now())
-  Category   Category[]
-  Product    Product[]
+  category   Category[]
+  product    Product[]
 }
 
+// DONE
 model Units {
   id         Int       @id @default(autoincrement())
   name       String    @db.VarChar(20)
@@ -140,7 +140,7 @@ model Units {
   status     Boolean
   update_at  DateTime  @updatedAt
   created_at DateTime  @default(now())
-  Product    Product[]
+  product    Product[]
 }
 
 model Delivery {
@@ -148,8 +148,8 @@ model Delivery {
   customerId     Int
   salesDate      DateTime
   created_at     DateTime         @default(now())
-  DeliveryDetail DeliveryDetail[]
-  Customer       Customer         @relation(fields: [customerId], references: [id])
+  deliveryDetail DeliveryDetail[]
+  customer       Customer         @relation(fields: [customerId], references: [id])
 }
 
 model DeliveryDetail {
@@ -160,9 +160,9 @@ model DeliveryDetail {
   deliveryQuantity Int
   expectedDate     DateTime
   created_at       DateTime  @default(now())
-  Delivery         Delivery  @relation(fields: [deliverId], references: [id])
-  Product          Product   @relation(fields: [productId], references: [id])
-  WareHouse        WareHouse @relation(fields: [warehouseId], references: [id])
+  delivery         Delivery  @relation(fields: [deliverId], references: [id])
+  product          Product   @relation(fields: [productId], references: [id])
+  wareHouse        WareHouse @relation(fields: [warehouseId], references: [id])
 }
 
 model Location {
@@ -171,7 +171,7 @@ model Location {
   locationAddress String
   update_at       DateTime    @updatedAt
   created_at      DateTime    @default(now())
-  WareHouse       WareHouse[]
+  wareHouse       WareHouse[]
 }
 
 model Inventory {
@@ -184,8 +184,8 @@ model Inventory {
   recordPoint    Int
   update_at      DateTime  @updatedAt
   created_at     DateTime  @default(now())
-  Product        Product   @relation(fields: [productId], references: [id])
-  WareHouse      WareHouse @relation(fields: [warehouseId], references: [id])
+  product        Product   @relation(fields: [productId], references: [id])
+  wareHouse      WareHouse @relation(fields: [warehouseId], references: [id])
 }
 
 model WareHouse {
@@ -194,11 +194,11 @@ model WareHouse {
   wareHouseName  String
   address        String
   isRefrigerate  Boolean
-  Location       Location         @relation(fields: [locationID], references: [id])
-  Inventory      Inventory[]
-  OrderDetails   OrderDetails[]
-  Transfer       Transfer[]
-  DeliveryDetail DeliveryDetail[]
+  location       Location         @relation(fields: [locationID], references: [id])
+  inventory      Inventory[]
+  orderDetails   OrderDetails[]
+  transfer       Transfer[]
+  deliveryDetail DeliveryDetail[]
 }
 
 model Transfer {
@@ -211,8 +211,8 @@ model Transfer {
   transferStatusId Int
   update_at        DateTime  @updatedAt
   created_at       DateTime  @default(now())
-  Product          Product   @relation(fields: [productId], references: [id])
-  WareHouse        WareHouse @relation(fields: [warehouseId], references: [id])
+  product          Product   @relation(fields: [productId], references: [id])
+  wareHouse        WareHouse @relation(fields: [warehouseId], references: [id])
   status           Status    @relation(fields: [transferStatusId], references: [id])
 }
 
@@ -221,7 +221,7 @@ model Status {
   name       String
   update_at  DateTime   @updatedAt
   created_at DateTime   @default(now())
-  Transfer   Transfer[]
+  transfer   Transfer[]
 }
 
 model Order {
@@ -231,9 +231,9 @@ model Order {
   orderDate     DateTime
   update_at     DateTime       @updatedAt
   created_at    DateTime       @default(now())
-  OrderDetails  OrderDetails[]
-  Provider      Provider       @relation(fields: [providerId], references: [id])
-  Transaction   Transaction    @relation(fields: [transactionId], references: [id])
+  orderDetails  OrderDetails[]
+  provider      Provider       @relation(fields: [providerId], references: [id])
+  transaction   Transaction    @relation(fields: [transactionId], references: [id])
 }
 
 model OrderDetails {
@@ -247,9 +247,9 @@ model OrderDetails {
   actualDate    DateTime
   update_at     DateTime  @updatedAt
   created_at    DateTime  @default(now())
-  Order         Order     @relation(fields: [orderId], references: [id])
-  Product       Product   @relation(fields: [productId], references: [id])
-  WareHouse     WareHouse @relation(fields: [warehouseId], references: [id])
+  order         Order     @relation(fields: [orderId], references: [id])
+  product       Product   @relation(fields: [productId], references: [id])
+  wareHouse     WareHouse @relation(fields: [warehouseId], references: [id])
 }
 
 model Transaction {
@@ -263,8 +263,8 @@ model Transaction {
   transactionStatus String
   update_at         DateTime @updatedAt
   created_at        DateTime @default(now())
-  Customer          Customer @relation(fields: [customerID], references: [id])
-  Order             Order[]
+  customer          Customer @relation(fields: [customerID], references: [id])
+  order             Order[]
 }
 
 // TODO: Add refarecnce 
@@ -280,7 +280,7 @@ model Provider {
   accepted   Boolean
   update_at  DateTime @updatedAt
   created_at DateTime @default(now())
-  Order      Order[]
+  order      Order[]
 }
 
 model Support {
@@ -291,6 +291,6 @@ model Support {
   messageReply String
   update_at    DateTime   @updatedAt
   created_at   DateTime   @default(now())
-  Customer     Customer[]
-  Admin        Admin[]
+  customer     Customer[]
+  admin        Admin[]
 }
