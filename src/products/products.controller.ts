@@ -23,8 +23,22 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: Prisma.ProductUpdateInput,) {
-    return this.productsService.update(+id, updateProductDto);
+  update(@Param('id') id: string, @Body() updateBody) {
+    const updateProductDto = {
+      name: updateBody.name,
+      brandId: updateBody.brandId,
+      unitsId: updateBody.unitsId,
+      typeId: updateBody.typeId,
+      productCode: updateBody.productCode,
+      barCode: updateBody.barCode,
+      quantity: updateBody.quantity,
+      quantityAlert: updateBody.quantity,
+      price: updateBody.price,
+      description: updateBody.description,
+      isRefrigerate: updateBody.isRefrigerate,
+    }
+    const { category, subCategory, disCategory, disSubCategory } = updateBody;
+    return this.productsService.update(+id, updateProductDto, category, subCategory, disCategory, disSubCategory);
   }
 
   @Delete(':id')

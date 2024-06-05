@@ -47,8 +47,10 @@ export class PrismaClientExceptionFilter extends BaseExceptionFilter {
                     super.catch(exception, host);
                     break;
             }
-        } else if (exception instanceof Prisma.PrismaClientValidationError) {
+        }
+        else if (exception instanceof Prisma.PrismaClientValidationError) {
             const status = HttpStatus.BAD_REQUEST;
+            // console.log(message);
             response.status(status).json({
                 statusCode: status,
                 message: 'Validation failed for the given data. Please check your input and try again.',

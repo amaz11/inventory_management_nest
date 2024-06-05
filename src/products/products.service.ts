@@ -10,6 +10,8 @@ export class ProductsService {
     console.log(createProductDto);
     const categoryArr = createProductDto.category as any as any[]
     const subCategoryArr = createProductDto.subCategory as any as any[]
+    const productImage = createProductDto.images as any as any[]
+    console.log(productImage);
     return await this.databaseService.product.create({
       data: {
         ...createProductDto,
@@ -18,6 +20,9 @@ export class ProductsService {
         },
         subCategory: {
           connect: subCategoryArr
+        },
+        images: {
+          createMany: { data: productImage }
         }
       },
       include: {
@@ -25,7 +30,7 @@ export class ProductsService {
         category: true,
         subCategory: true,
         productType: true,
-        productImage: true,
+        images: true,
         units: true,
       }
     });
@@ -38,7 +43,7 @@ export class ProductsService {
         category: true,
         subCategory: true,
         productType: true,
-        productImage: true,
+        images: true,
         units: true,
       }
     });
@@ -52,7 +57,7 @@ export class ProductsService {
         category: true,
         subCategory: true,
         productType: true,
-        productImage: true,
+        images: true,
         units: true,
       }
     });
@@ -62,27 +67,25 @@ export class ProductsService {
     return product
   }
 
-  async update(id: number, updateProductDto: Prisma.ProductUpdateInput) {
-    const categoryArr = updateProductDto.category as any as any[]
-    const subCategoryArr = updateProductDto.subCategory as any as any[]
+  async update(id: number, updateProductDto: Prisma.ProductUpdateInput, category: any[], subCategory: any[], disCategory: any[], disSubCategory: any[]) {
 
     return await this.databaseService.product.update({
       where: { id }, data: {
         ...updateProductDto,
         category: {
-          connect: categoryArr,
-          disconnect: []
+          connect: category,
+          disconnect: disCategory
         },
         subCategory: {
-          connect: subCategoryArr,
-          disconnect: []
+          connect: subCategory,
+          disconnect: disSubCategory
         }
       }, include: {
         brand: true,
         category: true,
         subCategory: true,
         productType: true,
-        productImage: true,
+        images: true,
         units: true,
       }
     })

@@ -84,9 +84,10 @@ model Product {
   brand            Brand            @relation(fields: [brandId], references: [id])
   units            Units?           @relation(fields: [unitsId], references: [id])
   productType      ProductType      @relation(fields: [typeId], references: [id])
-  productImage     ProductImage[]
+  images           ProductImage[]
 }
 
+// TODO: Image fields
 model ProductImage {
   id        Int     @id @default(autoincrement())
   image     String
